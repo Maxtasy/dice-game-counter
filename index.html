@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js" defer></script>
+    <title>10.000 Counter</title>
+</head>
+<body>
+    <div class="app-container">
+        <div class="settings-container">
+            <h3 class="settings-label">Settings</h3>
+            <div class="settings">
+                <label for="player-count-input">Players: <span class="player-count">3</span></label>
+                <input type="range" name ="player-count-input" id="player-count-input" min="2" max="6" step="1" value="3" default="3">
+                <div class="checkbox-container">
+                    <input type="checkbox" id="catch-up-rule"name="catch-up-rule" checked>
+                    <label for="catch-up-rule">Catch-up Rule? (-350)</label>
+                </div>
+            </div>
+            <div class="settings-arrow"></div>
+        </div>
+        <div class="game-container">
+        </div>
+        <div class="quick-input-container">
+            <button class="quick-input-button donut">🍩</button>
+            <button class="quick-input-button threeFifty">350</button>
+        </div>
+    </div>
+</body>
+</html>

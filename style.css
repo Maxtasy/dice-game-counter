@@ -1,0 +1,164 @@
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+/* Remove arrows from number inputs */
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+html {
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: bold;
+    font-size: 1.5rem;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: url(bg.jpg);
+    background-size: cover;
+    background-position: bottom center;
+}
+
+h3, p {
+    margin: 0;
+    padding: 0;
+}
+
+.app-container {
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(0, 0, 0, .8);
+    padding: 1rem 2rem;
+    border-radius: 2rem;
+}
+
+.settings-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: #2F5657;
+    position: relative;
+    border-radius: 1rem;
+    padding: .25rem .5rem;
+    border: 2px solid #E48C77;
+}
+
+.settings-label {
+    cursor: pointer;
+    color: #E48C77;
+    text-decoration: underline;
+}
+
+.settings {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem .5rem 1rem .5rem;
+}
+
+.show .settings {
+    display: flex;
+}
+
+.settings-arrow {
+    cursor: pointer;
+    --height: .5rem;
+    width: 3rem;
+    height: var(--height);
+    background-color: #E48C77;
+    clip-path: polygon(0% 0%, 50% 100%, 100% 0%);
+    bottom: calc(var(--height) * -1);
+    position: absolute;
+}
+
+.show .settings-arrow {
+    transform: rotate(180deg);
+    bottom: 0;
+}
+
+.game-container {
+    display: flex;
+    margin: 2rem 0;
+}
+
+.game-container input[type=number] {
+    font-family: inherit;
+    font-weight: inherit;
+    font-size: 1.5rem;;
+    text-align: center;
+    width: 4rem;
+    border: 1px solid transparent;
+}
+
+.game-container input[type=number]:hover,
+.game-container input[type=number]:active,
+.game-container input[type=number]:focus {
+    border: 1px solid #F27649;
+}
+
+.player-container {
+    color: black;
+    background-color: #F2EBD5;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border: 2px solid black;
+    gap: 1rem;
+}
+
+.player-container.active {
+    background-color: #658791;
+    border-color: #F27649;
+}
+
+.player-name {
+    margin-top: 1rem;
+}
+
+.player-name.active {
+    color: #F27649;
+}
+
+.player-score,
+.player-donuts {
+    min-height: 2rem;
+}
+
+.quick-input-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+}
+
+.quick-input-button {
+    cursor: pointer;
+    font-size: inherit;
+    font-weight: inherit;
+    width: 4rem;
+    height: 2rem;
+    padding: .25rem .5rem;
+    background-color: #F2EBD5;
+    border: none;
+    border-radius: 100vmax;
+}
