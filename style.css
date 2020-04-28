@@ -131,6 +131,12 @@ h3, p {
     border-color: #F27649;
 }
 
+.player-name-input {
+    font-size: 1rem;
+    margin-top: 1rem;
+    width: 3.5rem;
+}
+
 .player-name {
     margin-top: 1rem;
 }
