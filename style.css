@@ -132,13 +132,23 @@ h3, p {
 }
 
 .player-name-input {
+    display: none;
     font-size: 1rem;
     margin-top: 1rem;
     width: 3.5rem;
 }
 
+.player-name-input.show {
+    display: inline-block;
+}
+
 .player-name {
+    display: none;
     margin-top: 1rem;
+}
+
+.player-name.show {
+    display: block;
 }
 
 .player-name.active {

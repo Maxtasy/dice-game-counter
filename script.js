@@ -1,197 +1,198 @@
-const playerCountText = document.querySelector(".player-count");
-const playerCountInput = document.querySelector("#player-count-input");
-const gameContainer = document.querySelector(".game-container");
-const settingsArrow = document. querySelector(".settings-arrow");
-const settingsLabel = document. querySelector(".settings-label");
-const settingsContainer = document.querySelector(".settings-container");
-const catchUpRule = document.querySelector("#catch-up-rule");
-const donutButton = document.querySelector(".quick-input-button.donut");
-const buttonThreeFifty = document.querySelector(".quick-input-button.threeFifty");
+class Player {
+    constructor(parent, index) {
+        this.parent = parent;
+        this.playerIndex = index;
+        this.score = 0;
+        this.donutCount = 0;
+
+        this.playerContainer = document.createElement("div"),
+        this.playerContainer.classList.add("player-container");
+
+        this.nameInput = document.createElement("input");
+        this.nameInput.setAttribute("type", "text");
+        this.nameInput.classList.add("player-name-input");
+
+        this.playerContainer.appendChild(this.nameInput);
+
+        this.nameLabel = document.createElement("p");
+        this.nameLabel.classList.add("player-name", "show");
+        this.nameLabel.textContent = `Player ${this.playerIndex}`;
+
+        this.playerContainer.appendChild(this.nameLabel);
+
+        this.scoreLabel = document.createElement("p");
+        this.scoreLabel.classList.add("player-score");
+
+        this.playerContainer.appendChild(this.scoreLabel);
+
+        this.donutLabel = document.createElement("p");
+        this.donutLabel.classList.add("player-donuts");
+
+        this.playerContainer.appendChild(this.donutLabel);
+
+        this.scoreInput = document.createElement("input");
+        this.scoreInput.setAttribute("type", "number");
+        this.scoreInput.classList.add("player-score-input");
+        this.scoreInput.addEventListener("keyup", (e) => {
+            if (e.keyCode === 13) {
+                e.preventDefault()
+                const value = e.target.valueAsNumber;
+                if(!isNaN(value)) {
+                    this.changeScore(value);
+                }
+            }
+        });
+
+        this.playerContainer.appendChild(this.scoreInput);
+        
+        this.nameLabel.addEventListener("dblclick", () => {
+            this.nameLabel.classList.remove("show");
+            this.nameInput.classList.add("show");
+            this.nameInput.focus()
+        });
+        this.nameInput.addEventListener("keyup", (e) => {
+            if (e.keyCode === 13) {
+                e.preventDefault();
+                const newName = e.target.value;
+                this.nameLabel.textContent = newName;
+                this.nameLabel.classList.add("show");
+                this.nameInput.classList.remove("show");
+            }
+        });
+    }
+
+    addDonut() {
+        this.donutCount++;
+        if (this.donutCount >= 3) {
+            this.score -= 1000;
+            this.donutCount = 0;
+        }
+
+        let donuts = "";
+
+        for (let i = 0; i < this.donutCount; i++) {
+            donuts += "🍩";
+        }
+        this.donutLabel.textContent = donuts;
+    }
+
+    changeScore(value) {
+        if (value === 0) {
+            this.addDonut();
+        } else {
+            this.score += value;
+        }
+        this.removeFocus();
+        this.scoreInput.value = "";
+        if (this.parent.catchUpRule.checked && value !== 0) this.parent.checkForCatchUp();
+        this.parent.updateScoreLabels();
+        this.parent.setNextPlayerAsCurrentPlayer();
+        this.parent.focusCurrentPlayer();
+    }
+
+    updateScoreLabel() {
+        this.scoreLabel.textContent = this.score;
+    }
+
+    removeFocus() {
+        this.playerContainer.classList.remove("active");
+    }
+
+    addFocus() {
+        this.playerContainer.classList.add("active");
+        this.scoreInput.focus();
+    }
+}
+
+class Game {
+    constructor(playerCount = DEFAULT_PLAYER_COUNT) {
+        this.settingsContainer = document.querySelector(".settings-container");
+        this.settingsLabel = document. querySelector(".settings-label");
+        this.playerCountInput = document.querySelector("#player-count-input");
+        this.catchUpRule = document.querySelector("#catch-up-rule");
+        this.settingsArrow = document. querySelector(".settings-arrow");
+        this.gameContainer = document.querySelector(".game-container");
+        this.buttonThreeFifty = document.querySelector(".quick-input-button.threeFifty");
+        this.buttonDonut = document.querySelector(".quick-input-button.donut");
+
+        this.players = [];
+        this.playerCount = playerCount;
+
+        this.buttonThreeFifty.addEventListener("click", () => {
+            this.players[this.currentPlayerIndex].changeScore(350);
+        });
+
+        this.buttonDonut.addEventListener("click", () => {
+            this.players[this.currentPlayerIndex].changeScore(0);
+        });
+        
+        this.settingsLabel.addEventListener("click", () => {
+            this.toggleSettings();
+        });
+
+        this.playerCountInput.addEventListener("input", (e) => {
+            this.playerCount = e.target.valueAsNumber;
+            this.newGame();
+        });
+
+        this.settingsArrow.addEventListener("click", () => {
+            this.toggleSettings();
+        });
+
+        this.initializeNewGame();
+    }
+
+    initializeNewGame() {
+        this.gameContainer.innerHTML = "";
+
+        for (let i = 0; i < this.playerCount; i++) {
+            const player = new Player(this, i);
+
+            this.players.push(player);
+            this.gameContainer.appendChild(player.playerContainer);
+        }
+
+        this.currentPlayerIndex = 0;
+        this.currentPlayer = this.players[this.currentPlayerIndex];
+        this.updateScoreLabels()
+        this.focusCurrentPlayer()
+    }
+
+    checkForCatchUp() {
+        for (let i = 0; i < this.players.length; i++) {
+            if (i != this.currentPlayerIndex && this.players[i].score === this.currentPlayer.score) {
+                this.players[i].score -= 350;
+            }
+        }
+    }
+
+    setNextPlayerAsCurrentPlayer() {
+        this.currentPlayerIndex++;
+        if (this.currentPlayerIndex >= this.players.length) {
+            this.currentPlayerIndex = 0;
+        }
+        this.currentPlayer = this.players[this.currentPlayerIndex];
+    }
+
+    focusCurrentPlayer() {
+        this.players.forEach(player => {
+            player.removeFocus();
+        });
+
+        this.currentPlayer.addFocus();
+    }
+
+    updateScoreLabels() {
+        this.players.forEach(player => {
+            player.updateScoreLabel();
+        });
+    }
+    
+    toggleSettings() {
+        this.settingsContainer.classList.toggle("show");
+    }
+}
 
 const DEFAULT_PLAYER_COUNT = 3;
 
-let currentPlayer = 0;
-let playerCount = DEFAULT_PLAYER_COUNT;
-let playerScores = [];
-let playerScoreLabels;
-let playerScoreInputs;
-
-// Returns player index of elements within player containers
-function getPlayerIndex(node) {
-    return parseInt(node.parentElement.dataset.playerIndex);
-}
-
-function changeName() {
-    const nameLabel = this;
-
-    // Create temporary text input for new name
-    const tempTextField = document.createElement("input");
-    tempTextField.setAttribute("type", "text");
-    tempTextField.classList.add("player-name-input");
-
-    // Insert it into the DOM and hide nameLabel
-    nameLabel.parentElement.insertBefore(tempTextField, this);
-    nameLabel.style.display = "none";
-    tempTextField.focus();
-
-    // Add capture enter key to update the name
-    tempTextField.addEventListener("keyup", (e) => {
-        if (e.keyCode === 13) {
-            e.preventDefault();
-            nameLabel.textContent = tempTextField.value;
-            nameLabel.style.display = "initial";
-            tempTextField.parentElement.removeChild(tempTextField);
-        }
-    });
-}
-
-// Sets the current player when another score input was clicked
-function overrideCurrentPlayer() {
-    currentPlayer = getPlayerIndex(this);
-}
-
-// Highlights the current players' container and focuses its score input
-function focusCurrentPlayer() {
-    gameContainer.querySelector(`[data-player-index="${currentPlayer}"] > .player-score-input`).focus();
-
-    playerScoreInputs.forEach(playerScoreInput => {
-        if (getPlayerIndex(playerScoreInput) === currentPlayer) {
-            playerScoreInput.classList.add("active");
-        } else {
-            playerScoreInput.classList.remove("active");
-        }
-    });
-}
-
-// Updates all score labels to the current score values
-function updateScoreLabels() {
-    for (let i = 0; i < playerCount; i++) {
-        playerScoreLabels[i].textContent = playerScores[i];
-    }
-}
-
-// Adds current round score to player score
-function addToScore(scoreInputField, value) {
-    playerScores[currentPlayer] += value;
-    updateScoreLabels();
-
-    // Empty player score input and clear score input field
-    scoreInputField.value = "";
-    if (value === 0) {
-        addDonut();
-    } else {
-        clearDonuts();
-    }
-    
-    // Check if current player caught up to player with higher score (if catch up rule is set to true)
-    if (catchUpRule.checked && value != 0) checkForCatchUp();
-
-    // Set currentPlayer to next player
-    currentPlayer++;
-    if (currentPlayer >= playerCount) currentPlayer = 0;
-
-    // Focus next player container
-    focusCurrentPlayer();
-}
-
-// Removes all donuts from current player
-function clearDonuts() {
-    document.querySelector(`[data-player-index="${currentPlayer}"] > .player-donuts`).textContent = "";
-}
-
-// Adds a donut to current player
-function addDonut() {
-    const donutCount = document.querySelector(`[data-player-index="${currentPlayer}"] > .player-donuts`);
-    if (donutCount.textContent == "🍩🍩") {
-        donutCount.textContent = "";
-        playerScores[currentPlayer] -= 1000;
-    } else {
-        donutCount.textContent += "🍩";
-    }
-    updateScoreLabels();
-    currentPlayer++;
-    if (currentPlayer >= playerCount) currentPlayer = 0;
-    focusCurrentPlayer();
-}
-
-// Checks if current player caught up to player with higher score
-function checkForCatchUp() {
-    for (let i = 0; i < playerCount; i++) {
-        if (i != currentPlayer && playerScores[i] === playerScores[currentPlayer]) {
-            playerScores[i] -= 350;
-            updateScoreLabels();
-        }
-    }
-}
-
-// Hooks up all event listeners
-function hookEventListeners() {
-    document.querySelectorAll(".player-name").forEach(playerName => {
-        playerName.addEventListener("dblclick", changeName);
-    });
-
-    playerScoreLabels = document.querySelectorAll(".player-score");
-    
-    playerScoreInputs = document.querySelectorAll(".player-score-input");
-    playerScoreInputs.forEach(scoreInput => {
-        scoreInput.addEventListener("click", overrideCurrentPlayer);
-        scoreInput.addEventListener("keyup", (e) => {
-            if (e.keyCode === 13) {
-                const score = e.target.valueAsNumber;
-                if (isNaN(e.target.valueAsNumber)) return;
-                addToScore(e.target, score);
-            }
-        });
-    });
-}
-
-function buildGameContainer(playerCount) {
-    // Build html consisting of player containers and insert into game container
-    let html = "";
-
-    for (let i = 0; i < playerCount; i++) {
-        playerScores.push(0);
-        html += 
-        `<div data-player-index=${i} class="player-container player${i}">
-            <p class="player-name">Player ${i}</p>
-            <p class="player-score">${playerScores[i]}</p>
-            <p class="player-donuts"></p>
-            <input type="number" class="player-score-input">
-        </div>`
-    }
-
-    gameContainer.innerHTML = html;
-
-    hookEventListeners();
-}
-
-// Update player count and rebuild game container
-function updatePlayerCount() {
-    // Reset player scores
-    playerScores.length = 0;
-    
-    playerCount = this.value;
-    playerCountText.textContent = playerCount;
-    buildGameContainer(playerCount);
-}
-
-// Toggle settings container when user clicks on arrow
-function toggleSettings() {
-    settingsContainer.classList.toggle("show");
-}
-
-playerCountInput.addEventListener("input", updatePlayerCount);
-settingsArrow.addEventListener("click", toggleSettings);
-settingsLabel.addEventListener("click", toggleSettings);
-
-buttonThreeFifty.addEventListener("click", () => {
-    const playerInputField = document.querySelector(`[data-player-index="${currentPlayer}"] > .player-score-input`);
-    addToScore(playerInputField, 350);
-});
-
-donutButton.addEventListener("click", () => {
-    addDonut();
-});
-
-buildGameContainer(playerCount);
-focusCurrentPlayer();
+const game = new Game()
