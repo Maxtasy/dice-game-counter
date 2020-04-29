@@ -43,6 +43,13 @@ class Player {
             }
         });
 
+        this.scoreInput.addEventListener("click", () => {
+            this.parent.currentPlayerIndex = this.playerIndex;
+            this.parent.currentPlayer = this.parent.players[this.parent.currentPlayerIndex];
+            this.parent.focusCurrentPlayer();
+            // console.log(this.parent.currentPlayer)
+        })
+
         this.playerContainer.appendChild(this.scoreInput);
         
         this.nameLabel.addEventListener("dblclick", () => {
@@ -96,10 +103,12 @@ class Player {
 
     removeFocus() {
         this.playerContainer.classList.remove("active");
+        this.nameLabel.classList.remove("active");
     }
 
     addFocus() {
         this.playerContainer.classList.add("active");
+        this.nameLabel.classList.add("active");
         this.scoreInput.focus();
     }
 }
@@ -114,8 +123,7 @@ class Game {
         this.gameContainer = document.querySelector(".game-container");
         this.buttonThreeFifty = document.querySelector(".quick-input-button.threeFifty");
         this.buttonDonut = document.querySelector(".quick-input-button.donut");
-
-        this.players = [];
+        
         this.playerCount = playerCount;
 
         this.buttonThreeFifty.addEventListener("click", () => {
@@ -132,7 +140,8 @@ class Game {
 
         this.playerCountInput.addEventListener("input", (e) => {
             this.playerCount = e.target.valueAsNumber;
-            this.newGame();
+            document.querySelector(".player-count").textContent = this.playerCount;
+            this.initializeNewGame();
         });
 
         this.settingsArrow.addEventListener("click", () => {
@@ -143,6 +152,8 @@ class Game {
     }
 
     initializeNewGame() {
+        this.players = [];
+
         this.gameContainer.innerHTML = "";
 
         for (let i = 0; i < this.playerCount; i++) {
